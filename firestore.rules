@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+    match /customer_details/{uid} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    }
+     match /customer_details/{uid}/tokens/{token} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    }
+         match /customer_details/{uid}/tokens/{token} {
+allow read : if request.auth.token == token;
+       }
+  match /business_details/{uid} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    }
+     match /business_details/{uid}/tokens/{token} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    }
+         match /business_details/{uid}/tokens/{token} {
+allow read : if request.auth.token == token;
+       }
+    match/chat /{document=**} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    
+    } 
+    
+      match/chat_report /{document=**} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    
+    } 
+     match/block /{document=**} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    
+    } 
+     match/listing /{document=**} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    
+    } 
+     match/listing_report /{document=**} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    
+    } 
+     match/reply_comment /{document=**} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    
+    } 
+     match/images /{document=**} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    
+    } 
+    
+       match/contact /{document=**} {
+      allow read, create , update , write ,delete : if request.auth != null       ;
+    
+    }
+     match/contact /{document=**} {
+      allow read: if request.auth ==  'HNzVIQKH0LOSqdGIIRh0nLib7Ux1' ;
+    
+    }
+     
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "422069045055",
+    "project_id": "alaqy-64208",
+    "storage_bucket": "alaqy-64208.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:422069045055:android:b0afdafa96eaa569f1b58a",
+        "android_client_info": {
+          "package_name": "juve.alex.flutter_alaqy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "422069045055-m46pgskjob5eevts1kk6tunbdo59ijd2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5gZqsm_QcSWgmmSzWALUsyN1hcIgF9HE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "422069045055-m46pgskjob5eevts1kk6tunbdo59ijd2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
