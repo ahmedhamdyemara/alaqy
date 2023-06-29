@@ -1,18 +1,10 @@
-import 'dart:io';
-
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_alaqy/businessChoose.dart';
-import 'package:flutter_alaqy/userChoose.dart';
-import 'package:provider/provider.dart';
-//import 'auth.dart';
-import 'package:intl/intl_standalone.dart';
 
 import 'ImagePicker.dart';
-
-// import 'fucks.dart';
-// import 'user_image_picker.dart';
+import 'business_mainx.dart';
 
 class UserToBusinessForm extends StatefulWidget {
   const UserToBusinessForm(
@@ -23,12 +15,13 @@ class UserToBusinessForm extends StatefulWidget {
   final bool isLoading;
   final void Function(
     String email,
+    String area,
     String storename,
     String category,
     String city,
     String password,
     String userName,
-    File? image,
+    dynamic image,
     bool isLogin,
     BuildContext ctx,
   ) submitFn;
@@ -38,19 +31,33 @@ class UserToBusinessForm extends StatefulWidget {
 }
 
 class UserToBusinessFormState extends State<UserToBusinessForm> {
-  bool loading = false;
+  bool? loading;
+  final storecontroller = TextEditingController();
+  var _userImageFile;
+  bool cityon = false;
+  bool caton = false;
+  bool aron = false;
+  bool add = true;
 
+  List names = [];
+  List<Widget> nnn = [];
+  List<DropdownMenuItem> mmm = [];
+  List names2 = [];
+  List<Widget> nnn2 = [];
+  List<DropdownMenuItem> mmm2 = [];
+  List names3 = [];
+  List<Widget> nnn3 = [];
+  List<DropdownMenuItem> mmm3 = [];
   final _formKey = GlobalKey<FormState>();
   var _isLogin = true;
   var _userEmail = '';
   var _storename = '';
-  var _category = 'اجهزة المطبخ';
+  var _category = '';
   var _userName = '';
-  var _city = 'alexandria';
+  var _city = '';
   var _userPassword = '';
-  var _userImageFile;
-
-  void _pickedImage(File? image) {
+  var area = '';
+  void _pickedImage(dynamic image) {
     _userImageFile = image;
   }
 
@@ -61,40 +68,32 @@ class UserToBusinessFormState extends State<UserToBusinessForm> {
     final isValid = _formKey.currentState?.validate();
     FocusScope.of(context).unfocus();
 
-    if (_userImageFile == null && _isLogin) {
+    if (area == '' && _isLogin) {
+      setState(() {
+        loading = false;
+        caton = false;
+        cityon = false;
+        aron = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please pick an image.'),
+          content: const Text('Please choose an area.'),
           backgroundColor: Theme.of(context).errorColor,
         ),
       );
+      FocusScope.of(context).unfocus();
+
       return;
     }
-    if (_city == '' && _isLogin) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please choose a city.'),
-          backgroundColor: Theme.of(context).errorColor,
-        ),
-      );
-      return;
-    }
-    if (_category == '' && _isLogin) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please choose a category.'),
-          backgroundColor: Theme.of(context).errorColor,
-        ),
-      );
-      return;
-    }
+
     if (isValid == true) {
       _formKey.currentState?.save();
       widget.submitFn(
         _userEmail.trim(),
+        area.trim(),
         _storename.trim(),
-        _category.trim(),
-        _city.trim(),
+        _category.trim() == '' ? names2[0] : _category.trim(),
+        _city.trim() == '' ? names[0] : _city.trim(),
         _userPassword.trim(),
         _userName.trim(),
         _userImageFile,
@@ -106,17 +105,12 @@ class UserToBusinessFormState extends State<UserToBusinessForm> {
         if (user == null) {
           print('User is currently signed out!');
         } else {
-          Navigator.of(context).pushReplacementNamed(businessChoose.routeName);
+          Future.delayed(const Duration(seconds: 3), (() {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (ctx) => const BusinessMainx('none', 'widget.phone')));
+          }));
           print('User is signed in!');
-          // final cool = user.photoURL;
-          //   final zool =
-          //     FirebaseFirestore.instance.collection('users').doc('$user').get;
-          //  final mool = zool.toString().
-          // final sool = mool.asyncMap(
-          //   (event) {
-          //     ['userImage'];
-          //   },
-          // );
+
           print('$user');
         }
       });
@@ -128,271 +122,240 @@ class UserToBusinessFormState extends State<UserToBusinessForm> {
 
   @override
   Widget build(BuildContext context) {
-    //  final oppa = Provider.of<Auth>(context, listen: false).userId;
-
     return Center(
       child: Card(
         margin: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  //      if (_isLogin)
-                  UserImagePicker(_pickedImage),
-                  // if (_isLogin)
-                  //   StreamBuilder(
-                  //       stream: FirebaseFirestore.instance
-                  //           .collection('business_details')
-                  //           .snapshots(),
-                  //       builder: (ctx, chatSnapshot) {
-                  //         if (chatSnapshot.connectionState ==
-                  //             ConnectionState.waiting) {
-                  //           return chatSnapshot.hasData
-                  //               ? const Center(
-                  //                   child: CircularProgressIndicator(),
-                  //                 )
-                  //               : const Center(
-                  //                   child: Text('authentication'),
-                  //                 );
-                  //         }
-                  //         final chatDocs = chatSnapshot.data!.docs;
-                  //         final List<String> items = [];
-                  //         for (var i = 0; i < chatDocs.length; i++) {
-                  //           if (chatDocs.isNotEmpty) {
-                  //             items.add(chatDocs[i]['store_name']);
-                  //           }
-                  //         }
-                  //         return TextFormField(
-                  //           key: const ValueKey('store name'),
-                  //           autocorrect: false,
-                  //           textCapitalization: TextCapitalization.none,
-                  //           enableSuggestions: false,
-                  //           validator: (value) {
-                  //             if (value!.isEmpty) {
-                  //               return 'Please provide a value.';
-                  //             }
-                  //             if (items.contains(value)) {
-                  //               return 'this store name is already exists';
-                  //             }
-                  //             //   return '';
-                  //           },
-                  //           keyboardType: TextInputType.name,
-                  //           decoration: const InputDecoration(
-                  //             labelText: 'store name',
-                  //           ),
-                  //           onSaved: (value) {
-                  //             if (value != null) {
-                  //               _storename = value;
-                  //             }
-                  //           },
-                  //         );
-                  //       }),
-                  // TextFormField(
-                  //   key: const ValueKey('email'),
-                  //   autocorrect: false,
-                  //   textCapitalization: TextCapitalization.none,
-                  //   enableSuggestions: false,
-                  //   validator: (value) {
-                  //     //           if (value!.isEmpty || !value.contains('@')) {
-                  //     //           return 'Please enter a valid email address.';
-                  //     //       }
-                  //     //     return null;
-                  //     //      },
-                  //     if (value != null) {
-                  //       return (value.isEmpty || !value.contains('@'))
-                  //           ? 'Please enter a valid email address.'
-                  //           : null;
-                  //     }
-                  //     //     return null;
-                  //   },
-                  //   keyboardType: TextInputType.emailAddress,
-                  //   decoration: const InputDecoration(
-                  //     labelText: 'Email address',
-                  //   ),
-                  //   onSaved: (value) {
-                  //     if (value != null) {
-                  //       _userEmail = value;
-                  //     }
-                  //   },
-                  // ),
-                  // if (_isLogin)
-                  TextFormField(
-                    key: const ValueKey('username'),
-                    autocorrect: true,
-                    //      textCapitalization: TextCapitalization.words,
-                    enableSuggestions: false,
-                    validator: (value) {
-                      //                if (value!.isEmpty || value.length < 4) {
-                      //                return 'Please enter at least 4 characters';
-                      //                 }
-                      //                  return '';
-                      //               },
-                      if (value != null) {
-                        return (value.isEmpty || value.length < 4)
-                            ? 'Please enter at least 4 characters'
-                            : null;
-                      }
-                      //        return null;
-                    },
-                    decoration: const InputDecoration(labelText: 'store name'),
-                    onSaved: (value) {
-                      if (value != null) {
-                        _userName = value;
-                      }
-                    },
-                  ),
-                  // TextFormField(
-                  //   key: const ValueKey('password'),
-                  //   validator: (value) {
-                  //     if (value != null) {
-                  //       //                if (value!.isEmpty || value.length < 5) {
-                  //       //                    return 'Password must be at least 5 characters long.';
-                  //       //                  }
-                  //       //                  return '';
-                  //       //              },
-
-                  //       return (value.isEmpty || value.length < 5)
-                  //           ? 'Password must be at least 5 characters long.'
-                  //           : null;
-                  //     }
-                  //     //         return null;
-                  //   },
-                  //   decoration: const InputDecoration(labelText: 'Password'),
-                  //   obscureText: true,
-                  //   onSaved: (value) {
-                  //     if (value != null) {
-                  //       _userPassword = value;
-                  //     }
-                  //   },
-                  // ),
-                  //   if (_isLogin)
-                  DropdownButton(
-                    underline: Container(),
-                    icon: const Icon(
-                      Icons.category,
-                      color: Colors.grey,
-                    ),
-                    items: [
-                      DropdownMenuItem(
-                        value: 'اجهزة المطبخ',
-                        // onTap: () {
-                        //   _sendMessageblock();
-                        //   blacklist();
-                        // },
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 8),
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            children: const <Widget>[
-                              Icon(Icons.category_outlined),
-                              SizedBox(width: 8),
-                              Text('اجهزة المطبخ'),
-                            ],
-                          ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                AnimatedTextKit(
+                    animatedTexts: [
+                      TyperAnimatedText(
+                        '',
+                        textStyle: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.cyanAccent,
+                          overflow: TextOverflow.visible,
                         ),
-                      ),
+                        speed: const Duration(milliseconds: 100),
+                      )
                     ],
-                    onChanged: (value) {
-                      if (value == 'اجهزة المطبخ') {
-                        // setState(() {
-                        _category = "اجهزة المطبخ";
-                        // });
-                      }
+                    totalRepeatCount: 1,
+                    onNext: (p0, p1) async {
+                      if (add == true) {
+                        final areadocs = await FirebaseFirestore.instance
+                            .collection('area')
+                            .get();
+                        final categorydocs = await FirebaseFirestore.instance
+                            .collection('category')
+                            .get();
+                        final citydocs = await FirebaseFirestore.instance
+                            .collection('city')
+                            .get();
+                        for (var x = 0; x < citydocs.docs.length; x++) {
+                          names.add(citydocs.docs[x].data()['name']);
+                        }
+                        for (var r = 0; r < names.length; r++) {
+                          nnn.add(Text(names[r]));
+                          mmm.add(DropdownMenuItem(
+                              value: names[r],
+                              child: Container(
+                                child: Row(
+                                  children: <Widget>[
+                                    const Icon(Icons.location_city_outlined),
+                                    const SizedBox(width: 2),
+                                    Text(names[r]),
+                                  ],
+                                ),
+                              )));
+                        }
 
-                      // if (value == 'report') {
-                      //   _report();
-                      // }
-                    },
-                  ),
-                  //    if (_isLogin)
-                  DropdownButton(
-                    underline: Container(),
-                    icon: const Icon(
-                      Icons.location_city,
-                      color: Colors.grey,
+                        for (var y = 0; y < categorydocs.docs.length; y++) {
+                          names2.add(categorydocs.docs[y].data()['name']);
+                        }
+                        for (var z = 0; z < names2.length; z++) {
+                          nnn2.add(Text(names2[z]));
+                          mmm2.add(DropdownMenuItem(
+                              value: names2[z],
+                              child: Container(
+                                child: Row(
+                                  children: <Widget>[
+                                    const Icon(Icons.category_outlined),
+                                    const SizedBox(width: 2),
+                                    Text(names2[z]),
+                                  ],
+                                ),
+                              )));
+                        }
+                        for (var a = 0; a < areadocs.docs.length; a++) {
+                          names3.add(areadocs.docs[a].data()['name']);
+                        }
+                        for (var b = 0; b < names3.length; b++) {
+                          nnn3.add(Text(names3[b]));
+                          mmm3.add(DropdownMenuItem(
+                              value: names3[b],
+                              child: Container(
+                                child: Row(
+                                  children: <Widget>[
+                                    const Icon(Icons.location_on),
+                                    const SizedBox(width: 2),
+                                    Text(names3[b]),
+                                  ],
+                                ),
+                              )));
+                        }
+                      }
+                      setState(() {
+                        add == false;
+                      });
+                    }),
+                UserImagePicker(_pickedImage),
+                TextFormField(
+                  key: const ValueKey('username'),
+                  enableSuggestions: false,
+                  controller: storecontroller,
+                  validator: (value) {
+                    if (value != null) {
+                      return (value.isEmpty || value.length < 4)
+                          ? 'Please enter at least 4 characters'
+                          : null;
+                    }
+                  },
+                  decoration: const InputDecoration(labelText: 'store name'),
+                  onSaved: (value) {
+                    if (value != null) {
+                      _userName = value;
+                    }
+                  },
+                ),
+                ListTile(
+                    leading: Text(
+                      _city == ''
+                          ? names.isEmpty
+                              ? ''
+                              : names[0]
+                          : _city,
+                      style: TextStyle(
+                          color: cityon == false
+                              ? Colors.grey
+                              : Colors.deepPurple),
                     ),
-                    items: [
-                      DropdownMenuItem(
-                        value: 'alexandria',
-                        // onTap: () {
-                        //   _sendMessageblock();
-                        //   blacklist();
-                        // },
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 8),
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            children: const <Widget>[
-                              Icon(Icons.location_city_outlined),
-                              SizedBox(width: 8),
-                              Text('alexandria'),
-                            ],
-                          ),
-                        ),
+                    title: DropdownButton(
+                      underline: Text(
+                        'city',
+                        style: TextStyle(
+                            color: cityon == false
+                                ? Colors.grey
+                                : Colors.amberAccent),
                       ),
-                    ],
-                    onChanged: (value) {
-                      if (value == 'alexandria') {
-                        // setState(() {
-                        _city = 'alexandria';
-                        // });
-                      }
-
-                      // if (value == 'report') {
-                      //   _report();
-                      // }
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  //     if (widget.isLoading) const CircularProgressIndicator(),
-                  //   if (!widget.isLoading)
-                  (loading)
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: () {
-                            _trySubmit();
+                      icon: Icon(Icons.location_city_outlined,
+                          color: cityon == false
+                              ? Colors.grey
+                              : Colors.deepPurple),
+                      onChanged: (value) {
+                        for (var k = 0; k < names.length; k++) {
+                          if (value == names[k]) {
+                            _city = names[k];
                             setState(() {
-                              loading = true;
+                              cityon = true;
                             });
-                          },
-                          child: const Text('submit'),
-                        ),
-                  // if (oppa == 'iTODDDtLDWcUxCLzdOez2WZSGju2' ||
-                  //     oppa == 'bG7FfM4zbRPaoHaDU0S8dUQjwbv2' ||
-                  //     oppa == 'exztUlWOTeaTVZS7lLVCpG406UV2' ||
-                  //     oppa == 'H2BtXKJC0TTtVtjon9VnfYvu47L2' ||
-                  //     oppa == 'F8kf0a9zeNNtb7pl1cn9k4FkzJp1' ||
-                  //     oppa == '3QHQEtFNJAZOP5h3ZbW1UKmK2t33' ||
-                  //     oppa == 'T3cesGtnn1O6rlB5VuyxgDAuGFx2')
-                  //   if (!widget.isLoading)
-                  //     (oppa == 'iTODDDtLDWcUxCLzdOez2WZSGju2' ||
-                  //             oppa == 'bG7FfM4zbRPaoHaDU0S8dUQjwbv2' ||
-                  //             oppa == 'exztUlWOTeaTVZS7lLVCpG406UV2' ||
-                  //             oppa == 'H2BtXKJC0TTtVtjon9VnfYvu47L2' ||
-                  //             oppa == 'F8kf0a9zeNNtb7pl1cn9k4FkzJp1' ||
-                  //             oppa == '3QHQEtFNJAZOP5h3ZbW1UKmK2t33' ||
-                  //             oppa == 'T3cesGtnn1O6rlB5VuyxgDAuGFx2')
-                  //         ?
-                  // ((!widget.isLoading) || (loading = false))
-                  //     ? TextButton(
-                  //         //            textColor: Theme.of(context).primaryColor,
-                  //         child: Text(_isLogin
-                  //             ? 'I already have an account'
-                  //             : 'Creat new account'),
-                  //         onPressed: () {
-                  //           setState(() {
-                  //             _isLogin = !_isLogin;
-                  //           });
-                  //         },
-                  //       )
-                  //     : const CircularProgressIndicator()
-                  //  : const Divider(),
-                ],
-              ),
+                          }
+                        }
+                      },
+                      selectedItemBuilder: (BuildContext context) {
+                        return nnn;
+                      },
+                      items: mmm,
+                      onTap: () {},
+                    )),
+                ListTile(
+                  leading: Text(
+                    _category == ''
+                        ? names2.isEmpty
+                            ? ''
+                            : names2[0]
+                        : _category,
+                    style: TextStyle(
+                        color:
+                            caton == false ? Colors.grey : Colors.deepPurple),
+                  ),
+                  trailing: DropdownButton(
+                    underline: Text(
+                      'category',
+                      style: TextStyle(
+                          color:
+                              caton == false ? Colors.grey : Colors.tealAccent),
+                    ),
+                    icon: Icon(Icons.category_outlined,
+                        color:
+                            caton == false ? Colors.grey : Colors.deepPurple),
+                    onChanged: (value) {
+                      for (var l = 0; l < names2.length; l++) {
+                        if (value == names2[l]) {
+                          _category = names2[l];
+                          setState(() {
+                            caton = true;
+                          });
+                        }
+                      }
+                    },
+                    selectedItemBuilder: (BuildContext context) {
+                      return nnn2;
+                    },
+                    items: mmm2,
+                  ),
+                  onTap: () {},
+                ),
+                ListTile(
+                  leading: Text(
+                    area,
+                    style: TextStyle(
+                        color: aron == false ? Colors.grey : Colors.deepPurple),
+                  ),
+                  trailing: DropdownButton(
+                    underline: Text(
+                      'area',
+                      style: TextStyle(
+                          color: aron == false ? Colors.grey : Colors.blueGrey),
+                    ),
+                    icon: Icon(Icons.location_on,
+                        color: aron == false ? Colors.grey : Colors.deepPurple),
+                    onChanged: (value) {
+                      for (var m = 0; m < names3.length; m++) {
+                        if (value == names3[m]) {
+                          area = names3[m];
+                          setState(() {
+                            aron = true;
+                          });
+                        }
+                      }
+                    },
+                    selectedItemBuilder: (BuildContext context) {
+                      return nnn3;
+                    },
+                    items: mmm3,
+                  ),
+                  onTap: () {},
+                ),
+                const SizedBox(height: 12),
+                (loading == true)
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            loading == true;
+                          });
+                          Future.delayed(const Duration(seconds: 2), (() {
+                            _trySubmit();
+                          }));
+                        },
+                        child: const Text('submit'),
+                      ),
+              ],
             ),
           ),
         ),

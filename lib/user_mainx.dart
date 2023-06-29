@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -8,8 +9,8 @@ import 'package:flutter_alaqy/app_drawer.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'alaaqyProcess.dart';
-import 'badge.dart';
 import 'listing.dart';
+import 'user_main.dart';
 
 // import 'package:animated_text_kit/animated_text_kit.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -28,15 +29,15 @@ import 'listing.dart';
 // import 'cart.dart';
 // import 'categories.dart';
 
-class UserMain extends StatefulWidget {
-  static const routeName = '/UserMain';
+class UserMainx extends StatefulWidget {
+  static const routeName = '/UserMainx';
   final String idx;
-  const UserMain(this.idx, {super.key});
+  const UserMainx(this.idx, {super.key});
   @override
-  UserMainState createState() => UserMainState();
+  UserMainxState createState() => UserMainxState();
 }
 
-class UserMainState extends State<UserMain> {
+class UserMainxState extends State<UserMainx> {
   List<Map<String, Object>>? _pages;
   int _selectedPageIndex = 1;
   int _selectedPageIndexx = 0;
@@ -199,13 +200,36 @@ class UserMainState extends State<UserMain> {
       drawer: AppDrawer(),
       appBar: AppBar(
           toolbarHeight: 50,
-          title: Text(
-            widget.idx == 'none'
-                ? _pages![_selectedPageIndex]['title'].toString()
-                : _pages![_selectedPageIndexx]['title'].toString(),
-            style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 13),
+          title: AnimatedTextKit(
+            animatedTexts: [
+              TyperAnimatedText(
+                widget.idx == 'none'
+                    ? _pages![_selectedPageIndex]['title'].toString()
+                    : _pages![_selectedPageIndexx]['title'].toString(),
+                textStyle: const TextStyle(
+                  fontStyle: FontStyle.italic,
+                  fontSize: 13,
+                  color: Colors.cyanAccent,
+                  overflow: TextOverflow.visible,
+                ),
+                speed: const Duration(microseconds: 100),
+              )
+            ],
+            // totalRepeatCount: 2,
+            repeatForever: true,
+            onNext: (p0, p1) {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (ctx) => const UserMain('none')));
+            },
           ),
-          actions: [
+
+//  Text(
+//             widget.idx == 'none'
+//                 ? _pages![_selectedPageIndex]['title'].toString()
+//                 : _pages![_selectedPageIndexx]['title'].toString(),
+//             style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 13),
+//           ),
+          actions: const [
             // DropdownButton(
             //   underline: Container(),
             //   icon: Icon(
@@ -246,47 +270,14 @@ class UserMainState extends State<UserMain> {
         currentIndex:
             widget.idx == 'none' ? _selectedPageIndex : _selectedPageIndexx,
         // type: BottomNavigationBarType.fixed,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             //   backgroundColor: Colors.cyanAccent,
-            icon: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('customer_details')
-                    .where('second_uid',
-                        isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                    // .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .snapshots(),
-                builder: (ctx, userSnapshot) {
-                  if (userSnapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: Text(
-                        'Loading...',
-                        style: TextStyle(fontSize: 2),
-                      ),
-                    );
-                  }
-                  final chatDocs =
-                      userSnapshot.hasData ? userSnapshot.data : null;
+            icon: Icon(Icons.history_edu_outlined),
 
-                  if (userSnapshot.hasData == true) {
-                    final badgo1 = chatDocs!.docs.first.data()['sent'];
-                    final badgo2 = chatDocs.docs.first.data()['seen'];
-
-                    badgoo = (badgo1 - badgo2).toString();
-                    bag = double.tryParse(badgoo);
-                  }
-                  print(bag);
-                  return bag != 0.0
-                      ? Badgee(
-                          value: badgoo.toString().split('.').first,
-                          color: const Color.fromARGB(176, 244, 67, 54),
-                          child: const Icon(Icons.history_edu_outlined),
-                        )
-                      : const Icon(Icons.history_edu_outlined);
-                }),
             label: 'منشورات سابقة',
           ),
-          const BottomNavigationBarItem(
+          BottomNavigationBarItem(
             //   backgroundColor: Colors.cyanAccent,
             icon: Icon(Icons.search),
             label: 'الاقي عندك',

@@ -1,6 +1,9 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_alaqy/orderscards.dart';
+
 // import 'categoriesscreen.dart';
 // import 'welcome.dart';
 // import 'package:intl/intl_standalone.dart';
@@ -18,72 +21,52 @@ import 'package:flutter/material.dart';
 
 class AllOrders extends StatelessWidget {
   static const routeName = '/AllOrders';
+  final userx = FirebaseAuth.instance.currentUser!.uid;
+  void _selectPage() async {
+    final useri = await FirebaseFirestore.instance
+        .collection('business_details')
+        .where('second_uid', isEqualTo: userx)
+        .get();
+    final idx = useri.docs.first.id;
+    final sen = useri.docs.first.data()['sent'];
+    final seen = useri.docs.first.data()['seen'];
+    seen != sen
+        ? FirebaseFirestore.instance
+            .collection('business_details')
+            .doc(idx)
+            .update({'seen': sen})
+        : null;
+  }
 
   @override
   Widget build(BuildContext context) {
+    _selectPage();
+    final size = MediaQuery.of(context).size;
+    final heightx = size.height;
     return Scaffold(
-        body: Column(
-            //  mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: double.infinity,
-                alignment: Alignment.centerRight,
-                child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 8,
-                    ),
-                    width: 120,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
-                          bottomLeft: Radius.circular(12),
-                          bottomRight: Radius.circular(12)),
-                      color: Colors.purple,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 2,
-                      horizontal: 2,
-                    ),
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 120,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
-                            bottomLeft: Radius.circular(12),
-                            bottomRight: Radius.circular(12)),
-                        color: Colors.white,
-                      ),
-                      child: AnimatedTextKit(
-                          animatedTexts: [
-                            ScaleAnimatedText('Switch to user account',
-                                textStyle: TextStyle(
-                                    color: Colors.deepPurple.shade400),
-                                textAlign: TextAlign.center,
-                                duration: const Duration(milliseconds: 2200),
-                                scalingFactor: 0.1),
-                            ScaleAnimatedText('press here',
-                                textStyle: TextStyle(
-                                    color: Colors.deepPurple.shade400),
-                                textAlign: TextAlign.center,
-                                duration: const Duration(milliseconds: 2200),
-                                scalingFactor: 0.1)
-                          ],
-                          repeatForever: true,
-                          pause: const Duration(milliseconds: 0),
-                          onTap: () async {
-                            final checkUserAcc = await FirebaseFirestore
-                                .instance
-                                .collection('customer_details')
-                                .get();
-                          }),
-                    )),
-              ),
-            ]),
+        resizeToAvoidBottomInset: true,
+        body: SingleChildScrollView(
+            child: Column(children: <Widget>[
+          SizedBox(height: heightx - 140, child: const OrdersCards()),
+          AnimatedTextKit(
+            animatedTexts: [
+              TyperAnimatedText(
+                '',
+                textStyle: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.cyanAccent,
+                  overflow: TextOverflow.visible,
+                ),
+                speed: const Duration(seconds: 5),
+              )
+            ],
+            // totalRepeatCount: 2,
+            repeatForever: true,
+            onNext: (p0, p1) {
+              _selectPage();
+            },
+          ),
+        ])),
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
           child: const Icon(Icons.messenger_outline_rounded),

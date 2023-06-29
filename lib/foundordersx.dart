@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'foundcards.dart';
-
 // import 'categoriesscreen.dart';
 // import 'welcome.dart';
 // import 'package:intl/intl_standalone.dart';
@@ -19,8 +17,8 @@ import 'foundcards.dart';
 // import 'auth.dart';
 // import 'splash_screen.dart';
 
-class FoundOrders extends StatelessWidget {
-  static const routeName = '/FoundOrders';
+class FoundOrdersx extends StatelessWidget {
+  static const routeName = '/FoundOrdersx';
   final userx = FirebaseAuth.instance.currentUser!.uid;
   void _selectPage() async {
     final useri = await FirebaseFirestore.instance
@@ -44,7 +42,7 @@ class FoundOrders extends StatelessWidget {
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
-          SizedBox(height: heightx - 140, child: const foundCards()),
+          SizedBox(height: heightx - 150, child: const SizedBox()),
 
           // AnimatedTextKit(
           //   animatedTexts: [

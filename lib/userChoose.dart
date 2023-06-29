@@ -1,16 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_alaqy/authScreenUser.dart';
-import 'package:flutter_alaqy/business_main.dart';
 import 'package:flutter_alaqy/user_main.dart';
-import 'package:provider/provider.dart';
-// import 'auth_screen.dart';
-// import 'chat_screen.dart';
-// import 'splash_screen.dart';
-// import 'auth.dart';
-import 'package:intl/intl_standalone.dart';
-import 'dart:io';
 
 import 'numberPhone.dart';
 
@@ -23,21 +15,21 @@ class userChoose extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
         body: StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (ctx, userSnapshot) {
-              if (userSnapshot.connectionState == ConnectionState.waiting) {
+            builder: (ctx, userSnapshotd) {
+              if (userSnapshotd.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: Text('Loading...'),
                 );
               }
               // print(FirebaseAuth.instance.currentUser!.phoneNumber);
               // print(FirebaseAuth.instance.currentUser!.uid);
-              if (userSnapshot.hasData == false) {
+              if (userSnapshotd.hasData == false) {
                 // if (FirebaseAuth.instance.currentUser!.email == 'admin@gmail.com') {
                 //   if (userSnapshot.hasData) {
                 //     return ChatScreen();
                 //   }
 
-                return LoginScreen('customer');
+                return LoginScreen('customer', false);
               }
 
               return StreamBuilder(
@@ -54,30 +46,42 @@ class userChoose extends StatelessWidget {
                         child: Text('Loading...'),
                       );
                     }
-                    final chatDocs = userSnapshot.data!;
-
-                    // print(FirebaseAuth.instance.currentUser!.phoneNumber);
-                    // print(FirebaseAuth.instance.currentUser!.uid);
+                    final chatDocs =
+                        userSnapshot.hasData ? userSnapshot.data : null;
+                    if (userSnapshot.hasData == true) {
+                      Future.delayed(const Duration(seconds: 3), (() {
+                        FirebaseFirestore.instance
+                            .collection('customer_details')
+                            .doc(chatDocs!.docs.first.data()['first_uid'])
+                            .update({'activated': true, 'businesslast': false});
+                      }));
+                    }
                     if (userSnapshot.hasData == false) {
                       // if (FirebaseAuth.instance.currentUser!.email == 'admin@gmail.com') {
                       //   if (userSnapshot.hasData) {
                       //     return ChatScreen();
                       //   }
-
-                      return AuthScreenUser(
-                          FirebaseAuth.instance.currentUser!.phoneNumber
-                              .toString(),
-                          FirebaseAuth.instance.currentUser!.uid,
-                          true);
+                      Future.delayed(const Duration(seconds: 3), (() {
+                        return AuthScreenUser(
+                            FirebaseAuth.instance.currentUser!.phoneNumber
+                                .toString(),
+                            FirebaseAuth.instance.currentUser!.uid,
+                            true,
+                            false);
+                      }));
                     }
 
-                    return chatDocs.docs.isNotEmpty
-                        ? UserMain()
+                    // print(FirebaseAuth.instance.currentUser!.phoneNumber);
+                    // print(FirebaseAuth.instance.currentUser!.uid);
+
+                    return chatDocs!.docs.isNotEmpty
+                        ? const UserMain('none')
                         : AuthScreenUser(
                             FirebaseAuth.instance.currentUser!.phoneNumber
                                 .toString(),
                             FirebaseAuth.instance.currentUser!.uid,
-                            true);
+                            true,
+                            false);
                     //    }
                     //        return AuthScreen();
                   });

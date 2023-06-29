@@ -5,22 +5,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_alaqy/AllOrders.dart';
-import 'package:flutter_alaqy/FoundOrders.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'app_drawer2.dart';
-import 'badge.dart';
+import 'foundordersx.dart';
 
-class BusinessMain extends StatefulWidget {
-  static const routeName = '/BusinessMain';
+class BusinessMainx extends StatefulWidget {
+  static const routeName = '/BusinessMainx';
   final String idx;
+  final String phonex;
 
-  const BusinessMain(this.idx, {super.key});
+  const BusinessMainx(this.idx, this.phonex, {super.key});
   @override
-  BusinessMainState createState() => BusinessMainState();
+  BusinessMainxState createState() => BusinessMainxState();
 }
 
-class BusinessMainState extends State<BusinessMain> {
+class BusinessMainxState extends State<BusinessMainx> {
   List<Map<String, Object>>? _pages;
   int _selectedPageIndex = 1;
   int _selectedPageIndexx = 0;
@@ -42,7 +42,7 @@ class BusinessMainState extends State<BusinessMain> {
         'title': 'كل الطلبات',
       },
       {
-        'page': FoundOrders(), //
+        'page': FoundOrdersx(), //
         'title': 'موجود',
       },
     ];
@@ -98,9 +98,9 @@ class BusinessMainState extends State<BusinessMain> {
   void saveToken(String token) async {
     final lord = await FirebaseFirestore.instance
         .collection('customer_details')
-        .where('second_uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where('phone_num', isEqualTo: widget.phonex)
         .get();
-    final balaha = lord.docs.first.data()['first_uid'];
+    final balaha = lord.docs.isEmpty ? '' : lord.docs.first.data()['first_uid'];
     print(balaha);
     await FirebaseFirestore.instance
         .collection('customer_details')
@@ -213,7 +213,8 @@ class BusinessMainState extends State<BusinessMain> {
 
   @override
   Widget build(BuildContext context) {
-    print('main only');
+    print('mainxxxxx');
+
     fbm.subscribeToTopic('chat');
     fbm.subscribeToTopic('listing');
     fbm.subscribeToTopic('notify');
@@ -292,130 +293,133 @@ class BusinessMainState extends State<BusinessMain> {
         currentIndex:
             widget.idx == 'none' ? _selectedPageIndex : _selectedPageIndexx,
         // type: BottomNavigationBarType.fixed,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             //   backgroundColor: Colors.cyanAccent,
-            icon: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('business_details')
-                    .where('second_uid',
-                        isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                    // .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .snapshots(),
-                builder: (ctx, userSnapshotx) {
-                  if (userSnapshotx.hasData == false) {
-                    return const Center(
-                      child: Text(
-                        'Loading...',
-                        style: TextStyle(fontSize: 2),
-                      ),
-                    );
-                  }
-                  if (userSnapshotx.connectionState ==
-                      ConnectionState.waiting) {
-                    return const Center(
-                      child: Text(
-                        'Loading...',
-                        style: TextStyle(fontSize: 2),
-                      ),
-                    );
-                  }
-                  if (userSnapshotx.hasData == false) {
-                    return const Center(
-                      child: Text(
-                        'Loading...',
-                        style: TextStyle(fontSize: 2),
-                      ),
-                    );
-                  }
-                  final chatDocs =
-                      userSnapshotx.hasData ? userSnapshotx.data : null;
+            icon:
+                //  StreamBuilder(
+                //     stream: FirebaseFirestore.instance
+                //         .collection('business_details')
+                //         .where('phone_num', isEqualTo: widget.phonex)
 
-                  if (userSnapshotx.hasData == true) {
-                    final badgo1 = chatDocs!.docs.first.data()['sent'];
-                    final badgo2 = chatDocs.docs.first.data()['seen'];
+                //         // .doc(FirebaseAuth.instance.currentUser!.uid)
+                //         .snapshots(),
+                //     builder: (ctx, userSnapshotx) {
+                //       if (userSnapshotx.hasData == false) {
+                //         return const Center(
+                //           child: Text(
+                //             'Loading...',
+                //             style: TextStyle(fontSize: 2),
+                //           ),
+                //         );
+                //       }
+                //       if (userSnapshotx.connectionState ==
+                //           ConnectionState.waiting) {
+                //         return const Center(
+                //           child: Text(
+                //             'Loading...',
+                //             style: TextStyle(fontSize: 2),
+                //           ),
+                //         );
+                //       }
+                //       if (userSnapshotx.hasData == false) {
+                //         return const Center(
+                //           child: Text(
+                //             'Loading...',
+                //             style: TextStyle(fontSize: 2),
+                //           ),
+                //         );
+                //       }
+                //       final chatDocs =
+                //           userSnapshotx.hasData ? userSnapshotx.data : null;
 
-                    badgoo = badgo1 - badgo2;
-                  }
+                //       if (userSnapshotx.hasData == true) {
+                //         final badgo1 = chatDocs!.docs.first.data()['sent'];
+                //         final badgo2 = chatDocs.docs.first.data()['seen'];
 
-                  return userSnapshotx.hasData == false
-                      ? const Center(
-                          child: Text(
-                            'Loading...',
-                            style: TextStyle(fontSize: 2),
-                          ),
-                        )
-                      : badgoo != 0
-                          ? Badgee(
-                              value: badgoo.toString(),
-                              color: const Color.fromARGB(176, 244, 67, 54),
-                              child: const Icon(Icons.all_inclusive_rounded),
-                            )
-                          : const Icon(Icons.all_inclusive_rounded);
-                }),
+                //         badgoo = badgo1 - badgo2;
+                //       }
+
+                //       return userSnapshotx.hasData == false
+                //           ? const Center(
+                //               child: Text(
+                //                 'Loading...',
+                //                 style: TextStyle(fontSize: 2),
+                //               ),
+                //             )
+                //           : badgoo != 0
+                //               ? Badgee(
+                //                   value: badgoo.toString(),
+                //                   color: const Color.fromARGB(176, 244, 67, 54),
+                //                   child: const Icon(Icons.all_inclusive_rounded),
+                //                 )
+                // : const
+                Icon(Icons.all_inclusive_rounded),
+
             label: 'كل الطلبات',
           ),
           BottomNavigationBarItem(
               //   backgroundColor: Colors.cyanAccent,
-              icon: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('business_details')
-                      .where('second_uid',
-                          isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                      // .doc(FirebaseAuth.instance.currentUser!.uid)
-                      .snapshots(),
-                  builder: (ctx, userSnapshot) {
-                    if (userSnapshot.hasData == false) {
-                      return const Center(
-                        child: Text(
-                          'Loading...',
-                          style: TextStyle(fontSize: 2),
-                        ),
-                      );
-                    }
-                    if (userSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(
-                        child: Text(
-                          'Loading...',
-                          style: TextStyle(fontSize: 2),
-                        ),
-                      );
-                    }
-                    final chatDocs =
-                        userSnapshot.hasData ? userSnapshot.data : null;
-                    if (userSnapshot.hasData == false) {
-                      return const Center(
-                        child: Text(
-                          'Loading...',
-                          style: TextStyle(fontSize: 2),
-                        ),
-                      );
-                    }
-                    if (userSnapshot.hasData == true) {
-                      final badgo1 = chatDocs!.docs.first.data()['foundsent'];
-                      final badgo2 = chatDocs.docs.first.data()['foundseen'];
-                      final upnum = chatDocs.docs.first.data()['upnum'];
-                      final upnumseen = chatDocs.docs.first.data()['upnumseen'];
+              icon:
+//  StreamBuilder(
+//                   stream: FirebaseFirestore.instance
+//                       .collection('business_details')
+//                       .where('phone_num', isEqualTo: widget.phonex)
 
-                      badgoo = (badgo1 + upnum) - (badgo2 + upnumseen);
-                    }
+//                       // .doc(FirebaseAuth.instance.currentUser!.uid)
+//                       .snapshots(),
+//                   builder: (ctx, userSnapshot) {
+//                     if (userSnapshot.hasData == false) {
+//                       return const Center(
+//                         child: Text(
+//                           'Loading...',
+//                           style: TextStyle(fontSize: 2),
+//                         ),
+//                       );
+//                     }
+//                     if (userSnapshot.connectionState ==
+//                         ConnectionState.waiting) {
+//                       return const Center(
+//                         child: Text(
+//                           'Loading...',
+//                           style: TextStyle(fontSize: 2),
+//                         ),
+//                       );
+//                     }
+//                     final chatDocs =
+//                         userSnapshot.hasData ? userSnapshot.data : null;
+//                     if (userSnapshot.hasData == false) {
+//                       return const Center(
+//                         child: Text(
+//                           'Loading...',
+//                           style: TextStyle(fontSize: 2),
+//                         ),
+//                       );
+//                     }
+//                     if (userSnapshot.hasData == true) {
+//                       final badgo1 = chatDocs!.docs.first.data()['foundsent'];
+//                       final badgo2 = chatDocs.docs.first.data()['foundseen'];
+//                       final upnum = chatDocs.docs.first.data()['upnum'];
+//                       final upnumseen = chatDocs.docs.first.data()['upnumseen'];
 
-                    return userSnapshot.hasData == false
-                        ? const Center(
-                            child: Text(
-                              'Loading...',
-                              style: TextStyle(fontSize: 2),
-                            ),
-                          )
-                        : badgoo != 0
-                            ? Badgee(
-                                value: badgoo.toString(),
-                                color: const Color.fromARGB(176, 244, 67, 54),
-                                child: const Icon(Icons.navigation),
-                              )
-                            : const Icon(Icons.navigation);
-                  }),
+//                       badgoo = (badgo1 + upnum) - (badgo2 + upnumseen);
+//                     }
+
+//                     return userSnapshot.hasData == false
+//                         ? const Center(
+//                             child: Text(
+//                               'Loading...',
+//                               style: TextStyle(fontSize: 2),
+//                             ),
+//                           )
+//                         : badgoo != 0
+//                             ? Badgee(
+//                                 value: badgoo.toString(),
+//                                 color: const Color.fromARGB(176, 244, 67, 54),
+//                                 child: const Icon(Icons.navigation),
+//                               )
+                  //    : const
+                  Icon(Icons.navigation),
               label: 'موجود'),
         ],
       ),
